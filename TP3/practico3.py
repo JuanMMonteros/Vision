@@ -19,14 +19,15 @@ print(f"Propiedades del video: {width}x{height} a {fps} FPS")
 
 # Configurar VideoWriter
 fourcc = cv2.VideoWriter_fourcc(*'H264')
-out = cv2.VideoWriter("Salida12.mp4", fourcc, fps, (width,height))
+out = cv2.VideoWriter("Salida.mp4", fourcc, fps, (width,height))
 
 while cap.isOpened():
     ret, frame = cap.read()
     
     if ret:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        out.write(gray)
+        gray_bgr = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)  # Convertir escala de grises a BGR
+        out.write(gray_bgr)  # Escribir el fotograma en formato BGR
         cv2.imshow('Video procesado', gray)
         
         if cv2.waitKey(delay) & 0xFF == ord('q'):
