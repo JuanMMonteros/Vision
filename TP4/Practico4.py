@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import sys
+import time 
 
 
 if len(sys.argv) > 1:
@@ -48,9 +49,11 @@ while True:
         img = original_img.copy()
     elif k == ord('g'):
         if ix > 0 and iy > 0 and fx > 0 and fy > 0:
-            new_filename = input("Ingrese el nombre del archivo para guardar la imagen recortada (incluya la extensión): ")
+            new_filename = f"{int(time.time())}.png"
             if new_filename.strip():
-                cropped_img = original_img[iy:fy, ix:fx]
+                rangey = slice(iy, fy) if fy > iy else slice(fy, iy)
+                rangex = slice(ix, fx) if fx > ix else slice(fx, ix)
+                cropped_img = original_img[rangey, rangex]
                 cv2.imwrite(new_filename, cropped_img)
                 print(f"Imagen guardada como '{new_filename}'")
             else:
