@@ -21,11 +21,13 @@ ix, iy = -1, -1
 fx, fy = -1, -1
 
 def reset_program():
-    global rectangle_select, drawing, ix, iy, fx, fy, img, original_img, flag
+    global rectangle_select, drawing, ix, iy, fx, fy, img, original_img, affine_points, affine_mode
     rectangle_select = False
     drawing = False
     ix, iy = -1, -1
     fx, fy = -1, -1
+    affine_points = []
+    affine_mode = False
     img = original_img.copy()
 
 def draw_rectangle(event, x, y, flags, param):
@@ -71,11 +73,6 @@ def apply_euclidean_transformation_with_border(cropped_img, angle, tx, ty):
     transformed_img = cv2.warpAffine(rotated_img, translation_matrix, (cols, rows))
     return transformed_img
 
-
-# ...existing code...
-
-# --- NUEVO: Selección de 3 puntos y transformación afín ---
-
 affine_points = []
 affine_mode = False
 
@@ -118,18 +115,11 @@ def insert_image_affine(base_img, dst_pts):
     return result
 
 
-# Modificar el callback del mouse para modo afín
 def mouse_callback(event, x, y, flags, param):
     if affine_mode:
         select_affine_points(event, x, y, flags, param)
     else:
         draw_rectangle(event, x, y, flags, param)
-
-
-
-# ...existing code...
-
-# Modificar la tecla 'e' para usar la nueva función
 cv2.namedWindow(str(filename))
 cv2.setMouseCallback(str(filename), draw_rectangle)
 cv2.setMouseCallback(str(filename), mouse_callback)
