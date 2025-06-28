@@ -43,7 +43,7 @@ def draw_rectangle(event, x, y, flags, param):
 
 def euclidean_transformation(cropped_img, angle, tx, ty,scale=1):
     # Agregar un borde alrededor de la imagen seleccionada
-    border_size = max(cropped_img.shape[0], cropped_img.shape[1]) // 2
+    border_size = max(img.shape[0], img.shape[1]) // 2
     bordered_img = cv2.copyMakeBorder(
         cropped_img,
         top=border_size,
@@ -68,7 +68,7 @@ def euclidean_transformation(cropped_img, angle, tx, ty,scale=1):
     transformed_img = cv2.warpAffine(rotated_img, translation_matrix, (cols, rows))
     return transformed_img
 
-# Modificar la tecla 'e' para usar la nueva función
+
 cv2.namedWindow(str(filename))
 cv2.setMouseCallback(str(filename), draw_rectangle)
 
@@ -79,17 +79,25 @@ while True:
         reset_program()
     elif k == ord('s'):
         if ix > 0 and iy > 0 and fx > 0 and fy > 0:
-            scale = float(input("Ingrese el factor de escala: "))
-            angle = float(input("Ingrese el ángulo de rotación (en grados): "))
-            tx = int(input("Ingrese la traslación en x: "))
-            ty = int(input("Ingrese la traslación en y: "))
+            scale = (input("Ingrese el factor de escala: "))
+            angle = (input("Ingrese el ángulo de rotación (en grados): "))
+            tx = (input("Ingrese la traslación en x: "))
+            ty = (input("Ingrese la traslación en y: "))
             rangey = slice(iy, fy) if fy > iy else slice(fy, iy)
             rangex = slice(ix, fx) if fx > ix else slice(fx, ix)
-            cropped_img = original_img[rangey, rangex]
-            transformed_img = euclidean_transformation(cropped_img, angle, tx, ty, scale)
-            new_filename = f"euclidean_transformed_{int(time.time())}.png"
-            cv2.imwrite(new_filename, transformed_img)
-            print(f"Imagen transformada guardada como '{new_filename}'")
+            try:
+                scale = float(scale)
+                angle = float(angle)
+                tx = int(tx)
+                ty = int(ty)
+                cropped_img = original_img[rangey, rangex]
+                transformed_img = euclidean_transformation(cropped_img, angle, tx, ty, scale)
+                new_filename = f"euclidean_transformed_recorter_{int(time.time())}.png"
+                cv2.imwrite(new_filename, transformed_img)
+                print(f"Imagen transformada guardada como '{new_filename}'")
+            except ValueError:
+                print("Error: los valores de escala, ángulo, traslación deben ser numéricos")
+                reset_program()
         else:
             print("No se ha seleccionado un rectángulo")
         reset_program()
@@ -106,16 +114,24 @@ while True:
         reset_program()
     elif k == ord('e'):
         if ix > 0 and iy > 0 and fx > 0 and fy > 0:
-            angle = float(input("Ingrese el ángulo de rotación (en grados): "))
-            tx = int(input("Ingrese la traslación en x: "))
-            ty = int(input("Ingrese la traslación en y: "))
+            angle = (input("Ingrese el ángulo de rotación (en grados): "))
+            tx = (input("Ingrese la traslación en x: "))
+            ty = (input("Ingrese la traslación en y: "))
             rangey = slice(iy, fy) if fy > iy else slice(fy, iy)
             rangex = slice(ix, fx) if fx > ix else slice(fx, ix)
-            cropped_img = original_img[rangey, rangex]
-            transformed_img = euclidean_transformation(cropped_img, angle, tx, ty)
-            new_filename = f"euclidean_transformed_{int(time.time())}.png"
-            cv2.imwrite(new_filename, transformed_img)
-            print(f"Imagen transformada guardada como '{new_filename}'")
+            try:
+                angle = float(angle)
+                tx = int(tx)
+                ty = int(ty)
+                cropped_img = original_img[rangey, rangex]
+                transformed_img = euclidean_transformation(cropped_img, angle, tx, ty)
+                new_filename = f"euclidean_transformed_{int(time.time())}.png"
+                cv2.imwrite(new_filename, transformed_img)
+                print(f"Imagen transformada guardada como '{new_filename}'")
+            except ValueError:
+                print("Error: los valores de ángulo, traslación deben ser numéricos")
+                reset_program()
+                continue
         else:
             print("No se ha seleccionado un rectángulo")
         reset_program()

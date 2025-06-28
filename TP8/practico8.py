@@ -9,7 +9,7 @@ if len(sys.argv) > 2:
 else:
     print('Pasa los nombres de los archivos como argumento')
     sys.exit(0)
-
+    
 img = cv2.imread(filename)  # Lee la imagen
 if img is None:
     raise FileNotFoundError("Image not found")
@@ -86,12 +86,6 @@ def select_affine_points(event, x, y, flags, param):
             cv2.circle(img, (x, y), 5, (0, 0, 255), -1)
             cv2.imshow(str(filename), img)
 
-def compute_affine_transform(src_pts, dst_pts):
-    src = np.float32(src_pts)
-    dst = np.float32(dst_pts)
-    M = cv2.getAffineTransform(src, dst)
-    return M
-
 def insert_image_affine(base_img, dst_pts):
     global filenameafin
     insert_img = cv2.imread(filenameafin)
@@ -139,6 +133,18 @@ def rectify_image(base_img, src_pts, width=400, height=300):
     rectified = cv2.warpPerspective(base_img, H, (width, height))
     return rectified
 
+def order_points(pts):
+    pts = np.array(pts, dtype="float32")
+    s = pts.sum(axis=1)
+    diff = np.diff(pts, axis=1)
+    ordered = np.zeros((4,2), dtype="float32")
+    ordered[0] = pts[np.argmin(s)]      # Top-left
+    ordered[2] = pts[np.argmax(s)]      # Bottom-right
+    ordered[1] = pts[np.argmin(diff)]   # Top-right
+    ordered[3] = pts[np.argmax(diff)]   # Bottom-left
+    return ordered
+
+
 def mouse_callback(event, x, y, flags, param):
     if affine_mode:
         select_affine_points(event, x, y, flags, param)
@@ -152,7 +158,6 @@ cv2.setMouseCallback(str(filename), mouse_callback)
 # Bucle principal
 flag = False
 while True:
-
     cv2.imshow(str(filename), img)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('r'):    
@@ -209,6 +214,7 @@ while True:
         while len(homography_points) < 4:
             cv2.imshow(str(filename), img)
             cv2.waitKey(1)
+        homography_points = order_points(homography_points)
         homography_mode = False
         img[:] = original_img.copy()  # Limpia los círculos antes de rectificar
         rectified = rectify_image(original_img, homography_points)

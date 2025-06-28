@@ -84,11 +84,6 @@ def select_affine_points(event, x, y, flags, param):
             cv2.circle(img, (x, y), 5, (0, 0, 255), -1)
             cv2.imshow(str(filename), img)
 
-def compute_affine_transform(src_pts, dst_pts):
-    src = np.float32(src_pts)
-    dst = np.float32(dst_pts)
-    M = cv2.getAffineTransform(src, dst)
-    return M
 
 def insert_image_affine(base_img, dst_pts):
     global filenameafin
